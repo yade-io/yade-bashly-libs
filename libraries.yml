@@ -1,0 +1,5 @@
+proxmox:
+  help: Add standard functions for proxmox.
+  files:
+    - source: "lib/proxmox_lib.sh"
+      target: "%{user_lib_dir}/proxmox_lib.%{user_ext}"
