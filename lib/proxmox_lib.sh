@@ -1,3 +1,5 @@
+## [@bashly-upgrade github:yade-io/yade-bashly-libs;proxmox]
+
 # Function to authenticate and extract ticket and CSRF token
 # Inputs:
 #   - Environment variables:
