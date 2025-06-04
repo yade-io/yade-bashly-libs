@@ -1,5 +1,3 @@
-## [@bashly-upgrade github:yade-io/yade-bashly-libs;proxmox]
-
 # Function to authenticate and extract ticket and CSRF token
 # Inputs:
 #   - Environment variables:
@@ -32,7 +30,9 @@ function proxmox_list_vm_names() {
     -H "Authorization: PVEAPIToken=${PROXMOX_API_USER}=${PROXMOX_API_TOKEN}" \
     https://${PROXMOX_HOST}:8006/api2/json/nodes/${PROXMOX_PVE_NAME}/qemu)
 
-  readarray -t VM_NAMES < <(echo "$json_output" | jq -r '.data[] | select(.template != 1) | .name')
+  names=$(echo "$json_output" | jq -r '.data[] | select(.template != 1) | .name')
+
+  echo "$names"
 }
 
 # Function to fetch the list of template names from the Proxmox server
@@ -49,7 +49,9 @@ function proxmox_list_tpl_names() {
     -H "Authorization: PVEAPIToken=${PROXMOX_API_USER}=${PROXMOX_API_TOKEN}" \
     https://${PROXMOX_HOST}:8006/api2/json/nodes/${PROXMOX_PVE_NAME}/qemu)
 
-  readarray -t TPL_NAMES < <(echo "$json_output" | jq -r '.data[] | select(.template == 1) | .name')
+  names=$(echo "$json_output" | jq -r '.data[] | select(.template == 1) | .name')
+
+  echo "$names"
 }
 
 # Function to prompt the user to select a VM from the list of available VMs
@@ -59,13 +61,11 @@ function proxmox_list_tpl_names() {
 # Outputs:
 #   - Prints the selected VM name.
 function proxmox_select_vm() {
-  proxmox_list_vm_names
+  names=$(proxmox_list_vm_names)
 
-  if [ -z "$VM_NAME" ]; then
-    VM_NAME=$(gum choose --header "Please select the vm you want to start." "${VM_NAMES[@]}")
-  fi
+  vm_name=$(gum choose --header "Please select the vm." "${names[@]}")
 
-  echo "$VM_NAME"
+  echo "$vm_name"
 }
 
 # Function to retrieve the VM ID (vmid) for a given VM name
