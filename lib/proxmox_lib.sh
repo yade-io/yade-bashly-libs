@@ -52,7 +52,7 @@ function proxmox_list_tpl_names() {
     -H "Authorization: PVEAPIToken=${PROXMOX_API_USER}=${PROXMOX_API_TOKEN}" \
     https://${PROXMOX_HOST}:8006/api2/json/nodes/${PROXMOX_PVE_NAME}/qemu)
 
-  names=$(echo "$json_output" | jq -r '.data[] | select(.template == 1) | .name')
+  names=$(echo "$json_output" | jq -r '.data[] | select(.template == 1) | .name' | paste -sd' ')
 
   echo "$names"
 }
@@ -66,7 +66,9 @@ function proxmox_list_tpl_names() {
 function proxmox_select_vm() {
   names=$(proxmox_list_vm_names)
 
-  name=$(gum choose --header "Please select the vm." "${names[@]}")
+  read -a arr <<< "$names"
+
+  name=$(gum choose --header "Please select the vm." "${arr[@]}")
 
   echo "$name"
 }
@@ -74,7 +76,9 @@ function proxmox_select_vm() {
 function proxmox_select_tpl() {
   names=$(proxmox_list_tpl_names)
 
-  name=$(gum choose --header "Please select the vm." "${names[@]}")
+  read -a arr <<< "$names"
+
+  name=$(gum choose --header "Please select the vm." "${arr[@]}")
 
   echo "$name"
 }
